@@ -9,13 +9,25 @@ export default function MetadataPanel({
   metadata,
 }: Props) {
   return (
-    <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+    <div
+      className="
+        mt-8 rounded-3xl border border-white/10
+        bg-white/5 p-6 backdrop-blur-xl
+        shadow-2xl
+      "
+    >
       <h2 className="mb-6 text-2xl font-bold">
         Torrent Information
       </h2>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-xl bg-zinc-800 p-4">
+        <div
+          className="
+            rounded-2xl border border-white/5
+            bg-white/5 p-4 transition-all
+            hover:bg-white/10
+          "
+        >
           <p className="text-sm text-zinc-400">
             Name
           </p>
@@ -25,7 +37,13 @@ export default function MetadataPanel({
           </p>
         </div>
 
-        <div className="rounded-xl bg-zinc-800 p-4">
+        <div
+          className="
+            rounded-2xl border border-white/5
+            bg-white/5 p-4 transition-all
+            hover:bg-white/10
+          "
+        >
           <p className="text-sm text-zinc-400">
             Total Size
           </p>
@@ -35,7 +53,13 @@ export default function MetadataPanel({
           </p>
         </div>
 
-        <div className="rounded-xl bg-zinc-800 p-4">
+        <div
+          className="
+            rounded-2xl border border-white/5
+            bg-white/5 p-4 transition-all
+            hover:bg-white/10
+          "
+        >
           <p className="text-sm text-zinc-400">
             File Count
           </p>
@@ -45,7 +69,13 @@ export default function MetadataPanel({
           </p>
         </div>
 
-        <div className="rounded-xl bg-zinc-800 p-4">
+        <div
+          className="
+            rounded-2xl border border-white/5
+            bg-white/5 p-4 transition-all
+            hover:bg-white/10
+          "
+        >
           <p className="text-sm text-zinc-400">
             Info Hash
           </p>

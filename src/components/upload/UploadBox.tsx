@@ -109,37 +109,46 @@ export default function UploadBox() {
       <div
         {...getRootProps()}
         className={`
+          relative overflow-hidden
           flex cursor-pointer flex-col items-center justify-center
-          rounded-2xl border-2 border-dashed p-16 text-center
-          transition-all duration-300
+          rounded-3xl border border-white/10
+          bg-white/5 backdrop-blur-xl
+          p-16 text-center
+          shadow-2xl transition-all duration-300
+          hover:border-blue-500/50 hover:bg-white/10
           ${
             isDragActive
-              ? "border-blue-500 bg-blue-500/10"
-              : "border-zinc-700 bg-zinc-900 hover:border-zinc-500"
+              ? "scale-[1.02] border-blue-500 bg-blue-500/10"
+              : ""
           }
         `}
       >
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10" />
+
         <input {...getInputProps()} />
 
-        {loading ? (
-          <Loader2 className="mb-4 h-14 w-14 animate-spin text-blue-400" />
-        ) : (
-          <Upload className="mb-4 h-14 w-14 text-zinc-400" />
-        )}
+        <div className="relative z-10">
+          {loading ? (
+            <Loader2 className="mb-4 h-14 w-14 animate-spin text-blue-400" />
+          ) : (
+            <Upload className="mb-4 h-14 w-14 text-zinc-400" />
+          )}
 
-        <h2 className="text-2xl font-semibold">
-          {loading
-            ? "Parsing Torrent..."
-            : "Upload Torrent File"}
-        </h2>
+          <h2 className="text-2xl font-semibold">
+            {loading
+              ? "Parsing Torrent..."
+              : "Upload Torrent File"}
+          </h2>
 
-        <p className="mt-2 text-zinc-400">
-          Drag & drop your .torrent file here
-        </p>
+          <p className="mt-2 text-zinc-400">
+            Drag & drop your .torrent
+            file here
+          </p>
 
-        <p className="mt-1 text-sm text-zinc-500">
-          or click to browse
-        </p>
+          <p className="mt-1 text-sm text-zinc-500">
+            or click to browse
+          </p>
+        </div>
       </div>
 
       {error && (
@@ -161,9 +170,11 @@ export default function UploadBox() {
                 setSearch(e.target.value)
               }
               className="
-                w-full rounded-2xl border border-zinc-800
-                bg-zinc-900 px-5 py-4 text-white
-                outline-none transition-all
+                w-full rounded-2xl border border-white/10
+                bg-white/5 px-5 py-4 text-white
+                backdrop-blur-xl outline-none
+                transition-all
+                placeholder:text-zinc-500
                 focus:border-blue-500
               "
             />

@@ -62,7 +62,13 @@ export default function FileTree({
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+    <div
+      className="
+        mt-8 rounded-3xl border border-white/10
+        bg-white/5 p-6 backdrop-blur-xl
+        shadow-2xl
+      "
+    >
       <h2 className="mb-6 text-2xl font-bold">
         Files
       </h2>
@@ -71,7 +77,12 @@ export default function FileTree({
         {files.map((file, index) => (
           <div
             key={index}
-            className="flex items-center justify-between rounded-xl bg-zinc-800 p-4"
+            className="
+              flex items-center justify-between
+              rounded-2xl border border-white/5
+              bg-white/5 p-4 transition-all
+              hover:bg-white/10
+            "
           >
             <div className="flex items-center gap-3">
               {getFileIcon(
