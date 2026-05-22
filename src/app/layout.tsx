@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import {
   Inter,
   Space_Grotesk,
+  Syne,
 } from "next/font/google"
 
 import "./globals.css"
@@ -10,17 +11,39 @@ import "./globals.css"
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 })
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space",
+  display: "swap",
+})
+
+const syne = Syne({
+  subsets: ["latin"],
+  variable: "--font-syne",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
-  title: "BitReveal",
+  title: "BitReveal — Torrent Intelligence Platform",
   description:
-    "Torrent Metadata Intelligence Platform",
+    "Analyze torrent metadata with clarity. Inspect file structures, detect suspicious content, and visualize torrent intelligence through a modern dashboard.",
+  keywords: [
+    "torrent analyzer",
+    "torrent metadata",
+    "torrent inspector",
+    "BitReveal",
+    "torrent intelligence",
+  ],
+  authors: [{ name: "BitReveal" }],
+  openGraph: {
+    title: "BitReveal — Torrent Intelligence Platform",
+    description:
+      "Inspect torrent structures, detect suspicious files, and visualize metadata.",
+    type: "website",
+  },
 }
 
 export default function RootLayout({
@@ -34,7 +57,8 @@ export default function RootLayout({
         className={`
           ${inter.variable}
           ${spaceGrotesk.variable}
-          bg-black text-white antialiased
+          ${syne.variable}
+          antialiased
         `}
       >
         {children}
