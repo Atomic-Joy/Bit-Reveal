@@ -1,9 +1,18 @@
 "use client"
 
 import { Activity } from "lucide-react"
-import Link from "next/link"
 
-export default function Navbar() {
+interface NavbarProps {
+  activeTab: "analyzer" | "statistics"
+  setActiveTab: (tab: "analyzer" | "statistics") => void
+  hasMetadata: boolean
+}
+
+export default function Navbar({
+  activeTab,
+  setActiveTab,
+  hasMetadata,
+}: NavbarProps) {
   return (
     <nav className="sticky top-0 z-50">
       {/* Glass bar */}
@@ -28,25 +37,33 @@ export default function Navbar() {
           {/* Center: Nav links */}
           <div className="hidden items-center gap-1 md:flex">
             {[
-              { label: "Analyzer", active: true },
-              { label: "Statistics", active: false },
-            ].map((item) => (
-              <button
-                key={item.label}
-                className={`
-                  relative rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200
-                  ${item.active
-                    ? "text-white"
-                    : "text-zinc-500 hover:text-zinc-300"
-                  }
-                `}
-              >
-                {item.active && (
-                  <span className="absolute inset-0 rounded-lg bg-white/8" />
-                )}
-                <span className="relative">{item.label}</span>
-              </button>
-            ))}
+              { label: "Analyzer", id: "analyzer" as const },
+              { label: "Statistics", id: "statistics" as const },
+            ].map((item) => {
+              const disabled = item.id === "statistics" && !hasMetadata
+              return (
+                <button
+                  key={item.label}
+                  disabled={disabled}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`
+                    relative rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200
+                    ${disabled
+                      ? "opacity-30 cursor-not-allowed text-zinc-600"
+                      : activeTab === item.id
+                        ? "text-white cursor-pointer"
+                        : "text-zinc-500 hover:text-zinc-300 cursor-pointer"
+                    }
+                  `}
+                  title={disabled ? "Upload a torrent file to view statistics" : ""}
+                >
+                  {activeTab === item.id && (
+                    <span className="absolute inset-0 rounded-lg bg-white/8" />
+                  )}
+                  <span className="relative">{item.label}</span>
+                </button>
+              )
+            })}
           </div>
 
           {/* Right: Status */}
@@ -61,6 +78,6 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-    </nav >
+    </nav>
   )
 }

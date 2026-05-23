@@ -6,8 +6,9 @@ import UploadBox from "@/components/upload/UploadBox"
 import MetadataPanel from "@/components/stats/MetadataPanel"
 import StatsDashboard from "@/components/stats/StatsDashboard"
 import FileTree from "@/components/explorer/FileTree"
+import StatisticsPanel from "@/components/stats/StatisticsPanel"
 import { TorrentMetadata } from "@/types/torrent"
-import { X } from "lucide-react"
+import { X, ArrowRight, BarChart3, FolderOpen } from "lucide-react"
 
 export default function Home() {
   const [metadata, setMetadata] = useState<TorrentMetadata | null>(null)
@@ -15,6 +16,7 @@ export default function Home() {
   const [error, setError] = useState("")
   const [fileName, setFileName] = useState("")
   const [search, setSearch] = useState("")
+  const [activeTab, setActiveTab] = useState<"analyzer" | "statistics">("analyzer")
 
   const filteredFiles = useMemo(() => {
     if (!metadata) return []
@@ -29,6 +31,14 @@ export default function Home() {
     setFileName("")
     setError("")
     setSearch("")
+    setActiveTab("analyzer")
+  }
+
+  const handleSetMetadata = (data: TorrentMetadata | null) => {
+    setMetadata(data)
+    if (data) {
+      setActiveTab("analyzer") // auto switch to analyzer on upload
+    }
   }
 
   return (
@@ -44,7 +54,11 @@ export default function Home() {
       <div className="grain-overlay" />
 
       <main className="relative min-h-screen overflow-hidden text-white">
-        <Navbar />
+        <Navbar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          hasMetadata={!!metadata}
+        />
 
         {/* Hero Section */}
         <section className="relative mx-auto max-w-7xl px-6 pb-24 pt-16">
@@ -130,7 +144,7 @@ export default function Home() {
 
               <UploadBox
                 metadata={metadata}
-                setMetadata={setMetadata}
+                setMetadata={handleSetMetadata}
                 loading={loading}
                 setLoading={setLoading}
                 error={error}
@@ -145,9 +159,9 @@ export default function Home() {
           {metadata && (
             <div className="fade-up">
               {/* Section divider */}
-              <div className="my-12 flex items-center gap-4">
+              <div id="results-anchor" className="scroll-mt-24 my-12 flex items-center gap-4">
                 <span className="section-label">
-                  02 — Analysis Results
+                  02 — {activeTab === "analyzer" ? "Analysis Results" : "Diagnostic Statistics"}
                 </span>
                 <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
                 <button
@@ -159,40 +173,151 @@ export default function Home() {
                 </button>
               </div>
 
-              <MetadataPanel metadata={metadata} />
+              {activeTab === "analyzer" ? (
+                <>
+                  <MetadataPanel metadata={metadata} />
 
-              {/* Search bar — terminal style */}
-              <div className="mt-12 flex items-center gap-4">
-                <span className="section-label">
-                  03 — File Explorer
-                </span>
-                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-              </div>
+                  {/* Search bar — terminal style */}
+                  <div className="mt-12 flex items-center gap-4">
+                    <span className="section-label">
+                      03 — File Explorer
+                    </span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+                  </div>
 
-              <div className="mt-5 flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3 backdrop-blur-xl transition-all focus-within:border-blue-500/50 focus-within:bg-white/[0.04]">
-                <span className="mono text-sm font-medium text-blue-500">
-                  &gt;
-                </span>
-                <input
-                  type="text"
-                  placeholder="search files..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="mono w-full bg-transparent text-sm text-zinc-300 outline-none placeholder:text-zinc-600"
-                />
-                {search && (
+                  <div className="mt-5 flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3 backdrop-blur-xl transition-all focus-within:border-blue-500/50 focus-within:bg-white/[0.04]">
+                    <span className="mono text-sm font-medium text-blue-500">
+                      &gt;
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="search files..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="mono w-full bg-transparent text-sm text-zinc-300 outline-none placeholder:text-zinc-600"
+                    />
+                    {search && (
+                      <button
+                        onClick={() => setSearch("")}
+                        className="text-zinc-600 hover:text-zinc-400 transition-colors"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <StatsDashboard files={filteredFiles} />
+
+                  <FileTree files={filteredFiles} />
+
+                  {/* End of Page Navigation: Analyzer -> Statistics */}
+                  <div className="mt-12 rounded-2xl border border-white/5 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5 p-6 backdrop-blur-xl hover:border-blue-500/20 transition-all group">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10">
+                          <BarChart3 className="h-6 w-6 text-blue-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-syne text-base font-bold text-white group-hover:text-blue-400 transition-colors">
+                            Deep-Dive Statistics & Diagnostics
+                          </h3>
+                          <p className="text-sm text-zinc-400 mt-1">
+                            Analyze security threat levels, storage composition, trackers, and download speeds.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setActiveTab("statistics")
+                          setTimeout(() => {
+                            const el = document.getElementById("results-anchor")
+                            if (el) el.scrollIntoView({ behavior: "smooth" })
+                          }, 50)
+                        }}
+                        className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 hover:bg-blue-500 hover:shadow-blue-500/40 transition-all cursor-pointer group-hover:translate-x-1 duration-200 w-full sm:w-auto justify-center"
+                      >
+                        <span>View Stats Dashboard</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <StatisticsPanel metadata={metadata} />
+
+                  {/* End of Page Navigation: Statistics -> Analyzer */}
+                  <div className="mt-12 rounded-2xl border border-white/5 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 p-6 backdrop-blur-xl hover:border-emerald-500/20 transition-all group">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
+                          <FolderOpen className="h-6 w-6 text-emerald-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-syne text-base font-bold text-white group-hover:text-emerald-400 transition-colors">
+                            Torrent Content Analyzer
+                          </h3>
+                          <p className="text-sm text-zinc-400 mt-1">
+                            Inspect files, use terminal search, explore folder structures, and check size parameters.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setActiveTab("analyzer")
+                          setTimeout(() => {
+                            const el = document.getElementById("results-anchor")
+                            if (el) el.scrollIntoView({ behavior: "smooth" })
+                          }, 50)
+                        }}
+                        className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 hover:bg-emerald-500 hover:shadow-emerald-500/40 transition-all cursor-pointer group-hover:translate-x-1 duration-200 w-full sm:w-auto justify-center"
+                      >
+                        <span>Return to Analyzer</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+              {/* Bottom Navigation Toggle */}
+              <div className="mt-12 flex justify-center border-t border-white/5 pt-8">
+                <div className="flex items-center gap-1.5 rounded-xl border border-white/8 bg-white/[0.02] p-1.5 backdrop-blur-xl">
                   <button
-                    onClick={() => setSearch("")}
-                    className="text-zinc-600 hover:text-zinc-400 transition-colors"
+                    onClick={() => {
+                      setActiveTab("analyzer")
+                      // Smooth scroll to the results title anchor
+                      const el = document.getElementById("results-anchor")
+                      if (el) el.scrollIntoView({ behavior: "smooth" })
+                    }}
+                    className={`
+                      cursor-pointer rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all
+                      ${activeTab === "analyzer"
+                        ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25"
+                        : "text-zinc-500 hover:text-zinc-300"
+                      }
+                    `}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    Analyzer
                   </button>
-                )}
+                  <button
+                    onClick={() => {
+                      setActiveTab("statistics")
+                      // Smooth scroll to the results title anchor
+                      const el = document.getElementById("results-anchor")
+                      if (el) el.scrollIntoView({ behavior: "smooth" })
+                    }}
+                    className={`
+                      cursor-pointer rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all
+                      ${activeTab === "statistics"
+                        ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25"
+                        : "text-zinc-500 hover:text-zinc-300"
+                      }
+                    `}
+                  >
+                    Statistics
+                  </button>
+                </div>
               </div>
-
-              <StatsDashboard files={filteredFiles} />
-
-              <FileTree files={filteredFiles} />
             </div>
           )}
         </section>

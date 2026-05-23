@@ -10,5 +10,8 @@ export interface TorrentMetadata {
   files: TorrentFile[]
   infoHash: string
   created?: string
+  createdBy?: string
   comment?: string
+  announce?: string[]
+  pieceLength?: number
 }
