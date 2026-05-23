@@ -22,12 +22,23 @@ export async function POST(req: NextRequest) {
       Buffer.from(arrayBuffer)
     )
 
+    // Normalize announce to a flat list of strings
+    let announceUrls: string[] = []
+    if (parsed.announce) {
+      if (Array.isArray(parsed.announce)) {
+        announceUrls = parsed.announce.map((url: any) => typeof url === "string" ? url : String(url))
+      }
+    }
+
     return NextResponse.json({
       name: parsed.name || "Unknown",
       size: parsed.length || 0,
       infoHash: parsed.infoHash || "",
       created: parsed.created?.toString(),
+      createdBy: parsed.createdBy || "",
       comment: parsed.comment,
+      pieceLength: parsed.pieceLength || 0,
+      announce: announceUrls,
 
       files:
         parsed.files?.map((file: any) => ({
